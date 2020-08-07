@@ -5,6 +5,8 @@
 // TODO:
 //  search mysql driver for NodeJS
 
-const app = require("./app.js");
+const fs = require("fs");
+const config = JSON.parse(fs.readFileSync("../config.json"));
+const app = require("./app.js")(config);
 
 app.listen(8000);
