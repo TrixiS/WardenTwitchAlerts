@@ -1,10 +1,14 @@
 const express = require("express");
-const app = express();
+const fs = require("fs");
 
-app.get("/webhooks/twitch_callback", (req, res) => {
-    res.send(req.query["text"]);
-    // res.json(json);
-    // res.send(json.toString());
+const app = express();
+const secret = JSON.parse(fs.readFileSync("../config.json")).twitch_secret;
+
+app.post("/webhooks/twitch_callback", (req, res) => {
+    if (req.query["hub.secret"] !== secret)
+        return;
+
+    console.log(req.query.toString());
 });
 
 module.exports = app;
