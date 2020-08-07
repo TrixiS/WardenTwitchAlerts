@@ -13,6 +13,10 @@ app.post("/webhooks/twitch_callback", (req, res) => {
 
 app.get("/webhooks/twitch_callback", (req, res) => {
     const challenge = req.query["hub.challenge"];
+
+    console.log(req.query);
+    console.log(challenge);
+
     res.status(200);
     res.send(challenge);
 });
