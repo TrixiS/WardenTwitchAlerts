@@ -12,6 +12,7 @@ app.post("/webhooks/twitch_callback", (req, res) => {
 });
 
 app.get("/webhooks/twitch_callback", (req, res) => {
+    console.log(req.query.toString());
     res.status(200);
     res.send(secret);
 });
