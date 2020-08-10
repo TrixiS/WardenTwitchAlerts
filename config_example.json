@@ -1,0 +1,35 @@
+{
+    "bot_token": "",
+
+    "twitch_client_id": "",
+    "twitch_client_secret": "",
+    "twitch_secret": "",
+
+    "database": {
+        "host": "localhost",
+        "user": "",
+        "password": "",
+        "database": "",
+        "port": 3306
+    },
+
+    "langs": {
+        "ru": {
+            "no": "Нет",
+
+            "twitch": {
+                "viewers": "Зрители",
+                "game": "Игра"
+            }
+        },
+
+        "en": {
+            "no": "No",
+
+            "twitch": {
+                "viewers": "Viewers",
+                "game": "Game"
+            }
+        }
+    }
+}
