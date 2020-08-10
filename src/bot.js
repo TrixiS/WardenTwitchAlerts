@@ -40,7 +40,7 @@ class AlertClient extends discord.Client {
         else if (colorRow.color == "rnd")
             color = "RANDOM";
         else
-            color = color.split(';').map(x => Number.parseInt(x));
+            color = colorRow.color.split(';').map(x => Number.parseInt(x));
 
         return color;
     }
