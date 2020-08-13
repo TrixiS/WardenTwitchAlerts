@@ -83,7 +83,7 @@ class AlertClient extends discord.Client {
             embed.setImage(bigThumbUrl);
             embed.setThumbnail(stream.thumbnail_url);
 
-            await alertChannel.send({embed});
+            await alertChannel.send({ embed });
         }
     }
 }

@@ -1,7 +1,6 @@
-// TODO: check x hub signature header when receiving payload
-
 const express = require("express");
 const bodyParser = require("body-parser");
+const crypto = require("crypto");
 
 const app = express();
 const maxNotificationsLength = 5;
@@ -9,15 +8,32 @@ const maxNotificationsLength = 5;
 let notificationsCache = [];
 let secret, db, alertClient, conn;
 
-app.use(bodyParser.json());
+app.use(bodyParser.json({
+    verify: function(req, res, buf, encoding) {
+        if (!(req.headers && req.headers["x-hub-signature"])) {
+            req.verified = false;
+            return;
+        }
+
+        const xHub = req.headers["x-hub-signature"].split('=');
+        const decrypted = crypto.createHmac("sha256", secret).update(buf).digest("hex");
+
+        req.verified = xHub[1] == decrypted;
+    }
+}));
 
 app.post("/webhooks/twitch_callback", async (req, res) => {
-    const payloadSecret = req.query["hub.secret"];
-    const notificationId = req.headers["twitch-notification-id"];
-    
-    let payloadData = req.body["data"];
-
     res.status(200).send("OK");
+    
+    if (!req.verified)
+        return;
+
+    const payloadData = req.body["data"][0];
+    
+    if (payloadData == undefined)
+        return;
+        
+    const notificationId = req.headers["twitch-notification-id"];
 
     if (notificationId in notificationsCache) {
         if (notificationsCache.length >= maxNotificationsLength)
@@ -26,10 +42,6 @@ app.post("/webhooks/twitch_callback", async (req, res) => {
         return;
     }
 
-    if (payloadData == undefined || payloadData.length == 0)
-        return;
-
-    payloadData = payloadData[0];
     notificationsCache.push(notificationId);
 
     const [guildIds, fields] = await conn.execute(
