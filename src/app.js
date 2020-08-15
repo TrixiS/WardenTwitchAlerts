@@ -34,12 +34,10 @@ app.post("/webhooks/twitch_callback", async (req, res) => {
     if (payloadData == undefined)
         return;
     
-    if (payloadData.user_id in streamsStartedDates) {
-        if (payloadData.started_at == streamsStartedDates[payloadData.user_id])
-            return;
-    } else {
-        streamsStartedDates[payloadData.user_id] = payloadData.started_at;
-    }
+    if (payloadData.started_at == streamsStartedDates[payloadData.user_id])
+        return;
+    
+    streamsStartedDates[payloadData.user_id] = payloadData.started_at;
 
     const notificationId = req.headers["twitch-notification-id"];
 
