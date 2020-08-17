@@ -3,8 +3,8 @@ const bodyParser = require("body-parser");
 const crypto = require("crypto");
 
 const app = express();
-const maxNotificationsLength = 5;
-const streamsStartedDates = {};
+const MAX_NOTIFICATIONS_LEN = 5;
+const dataCache = {};
 
 let notificationsCache = [];
 let secret, db, alertClient, conn;
@@ -25,26 +25,33 @@ app.use(bodyParser.json({
 
 app.post("/webhooks/twitch_callback", async (req, res) => {
     res.status(200).send("OK");
-    
+
     if (!req.verified)
         return;
 
     const payloadData = req.body["data"][0];
-    
+
     if (payloadData == undefined)
         return;
-    
-    if (payloadData.started_at == streamsStartedDates[payloadData.user_id])
+
+    const cachedData = dataCache[payloadData.user_id];
+
+    if (cachedData != undefined
+            && payloadData.started_at == cachedData.started_at
+            && payloadData.title != cachedData.title)
         return;
-    
-    streamsStartedDates[payloadData.user_id] = payloadData.started_at;
+
+    dataCache[payloadData.user_id] = {
+        started_at: payloadData.started_at,
+        title: payloadData.title
+    };
 
     const notificationId = req.headers["twitch-notification-id"];
 
     if (notificationId in notificationsCache) {
-        if (notificationsCache.length >= maxNotificationsLength)
+        if (notificationsCache.length >= MAX_NOTIFICATIONS_LEN)
             notificationsCache = [];
-        
+
         return;
     }
 
@@ -52,7 +59,8 @@ app.post("/webhooks/twitch_callback", async (req, res) => {
 
     const [guildIds, fields] = await conn.execute(
         "SELECT CONVERT(`server`, CHAR) AS `server` FROM `twitch` WHERE `user_id` = ?",
-        [Number.parseInt(payloadData.user_id)]);
+        [Number.parseInt(payloadData.user_id)]
+    );
 
     if (guildIds.length == 0)
         return;
@@ -60,8 +68,9 @@ app.post("/webhooks/twitch_callback", async (req, res) => {
     await alertClient.sendAlert(
         payloadData,
         guildIds
-        .map(row => alertClient.guilds.cache.get(row.server))
-        .filter(guild => guild != undefined));
+            .map(row => alertClient.guilds.cache.get(row.server))
+            .filter(guild => guild != undefined)
+    );
 });
 
 app.get("/webhooks/twitch_callback", (req, res) => {
