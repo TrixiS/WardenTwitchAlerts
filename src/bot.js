@@ -9,7 +9,7 @@ class AlertClient extends discord.Client {
         super(...params);
         this.config = config;
         this.twitchApi = new twitch.API(config.twitch_client_id, config.twitch_client_secret);
-        this.langs = config.langs; 
+        this.langs = config.langs;
     }
 
     login() {
@@ -51,7 +51,7 @@ class AlertClient extends discord.Client {
 
         const user = await this.twitchApi.getUser(stream.user_id);
         const game = await this.twitchApi.getGame(stream.game_id);
-        
+
         const userLogin = stream.user_name.toLowerCase();
         const bigThumbUrl = `https://static-cdn.jtvnw.net/previews-ttv/live_user_${userLogin}-640x360.jpg`;
 
@@ -81,9 +81,13 @@ class AlertClient extends discord.Client {
             embed.addField(lang.twitch.game, game ? game.name : lang.no, true);
             embed.setAuthor(user.display_name, user.profile_image_url);
             embed.setImage(bigThumbUrl);
-            embed.setThumbnail(stream.thumbnail_url);
+            embed.setThumbnail(user.profile_image_url);
 
-            await alertChannel.send({ embed });
+            try {
+                await alertChannel.send({ embed });
+            } catch (error) {
+                continue;
+            }
         }
     }
 }

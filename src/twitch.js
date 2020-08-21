@@ -20,7 +20,7 @@ class TwitchAPIToken {
 }
 
 class TwitchAPI {
-    
+
     constructor(clientId, clientSecret) {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
