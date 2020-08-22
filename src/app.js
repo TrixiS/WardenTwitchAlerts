@@ -3,10 +3,8 @@ const bodyParser = require("body-parser");
 const crypto = require("crypto");
 
 const app = express();
-const MAX_NOTIFICATIONS_LEN = 5;
 const dataCache = {};
 
-let notificationsCache = [];
 let secret, db, alertClient, conn;
 
 app.use(bodyParser.json({
@@ -45,17 +43,6 @@ app.post("/webhooks/twitch_callback", async (req, res) => {
         started_at: payloadData.started_at,
         title: payloadData.title
     };
-
-    const notificationId = req.headers["twitch-notification-id"];
-
-    if (notificationId in notificationsCache) {
-        if (notificationsCache.length >= MAX_NOTIFICATIONS_LEN)
-            notificationsCache = [];
-
-        return;
-    }
-
-    notificationsCache.push(notificationId);
 
     const [guildIds, fields] = await conn.execute(
         "SELECT CONVERT(`server`, CHAR) AS `server` FROM `twitch` WHERE `user_id` = ?",
