@@ -23,8 +23,6 @@ export class AlertApp {
 
         this.app.use((req, res, next) => { bodyParser["default"].json({
             verify: (req: IVerifiedRequest, res, buf, encoding) => {
-                req.verified = true;
-
                 if (!(req.headers && req.headers["x-hub-signature"])) {
                     req.verified = false;
                     return;
