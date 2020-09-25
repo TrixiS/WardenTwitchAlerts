@@ -1,0 +1,19 @@
+{
+    "ru": {
+        "no": "Нет",
+
+        "twitch": {
+            "viewers": "Зрители",
+            "game": "Игра"
+        }
+    },
+
+    "en": {
+        "no": "No",
+
+        "twitch": {
+            "viewers": "Viewers",
+            "game": "Game"
+        }
+    }
+}

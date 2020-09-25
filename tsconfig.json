@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "outDir": "built",
+        "target": "ESNext",
+        "moduleResolution": "Node",
+        "strictNullChecks": true,
+        "downlevelIteration": true,
+        "esModuleInterop": true,
+        "resolveJsonModule": true,
+        "removeComments": true
+    },
+    "include": ["src", "src/*/"],
+    "exclude": ["node_modules"]
+}
