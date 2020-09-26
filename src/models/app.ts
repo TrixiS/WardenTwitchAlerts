@@ -51,14 +51,15 @@ export class AlertApp {
 
     private twitchCallbackGet(req: Request, res: Response) {
         res.status(200);
-        res.send(req.query["hub.channelge"]);
+        res.send(req.query["hub.challenge"]);
     }
 
     private async twitchCallbackPost(req: IVerifiedRequest, res: Response) {
         res.status(200).send("OK");
 
-        if (!req.verified)
+        if (!req.verified) {
             return;
+        }
 
         const payloadData = req.body["data"][0];
 
